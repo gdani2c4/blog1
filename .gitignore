@@ -1,0 +1,10 @@
+llaverecap
+wsgi.py
+*.sql
+*.ini
+*.tmp
+__pycache__
+entv
+tmp
+instance
+blog_p_lib/__pycache__

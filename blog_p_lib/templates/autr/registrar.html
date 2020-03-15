@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block cabecero %}
+  <h1>{% block titulo %}registrar{% endblock %}</h1>
+{% endblock %}
+
+{% block contenido %}
+  <form method="post">
+    <label for="nom_usr">nombre de usuario</label>
+    <input name="nom_usr" id="nom_usr" required>
+	<label for = "correol">
+		dirección de correo electrónico</label>
+	<input name = "correol" id = "correol" required>
+    <label for="ctsna">contraseña</label>
+    <input type="ctsna" name="ctsna" id="ctsna" required>
+    <input type="submit" value="registrar">
+  </form>
+{% endblock %}

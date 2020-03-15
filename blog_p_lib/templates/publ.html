@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block guiones %}
+	<script src =
+		"{{ url_for( "static", filename = "jquery3_4_1.js" ) }}" >
+	</script><script src =
+		"{{ url_for( "static", filename = "cmt.js" ) }}" >
+	</script><script src =
+		"{{ url_for( "static", filename = "cmt_lib.js" ) }}" >
+	</script><script src =
+		"{{ recap_url }}" >
+	</script>
+<!-- alternativa - generar los caminos mediante
+	url_for de flask / jinja :
+	<script src =
+"{{ url_for('static', filename='jquery-latest.min.js') }}"
+-->
+{% endblock %}
+
+{% block contenido %}
+
+	<div id = "publ" name="{{ id_publ }}">{{ publ }}</div>
+
+	{% for cmt in cmtos %}
+		{% if g.usr[ "id" ] != cmt[ "id_usr" ] %}
+			<p>{{ cmt[ "ctndo" ] }}</p>
+		{% else %}
+			<form id = "cmt{{ cmt[ "id" ] }}" >
+			<p>
+				{{ cmt[ "ctndo" ] }} </p>
+			<input type="submit" value="revisar"
+			 onclick="modo_ed( {{cmt[ "id" ]}} ); return false;" >
+			<span id="dejar_cambios"></span>
+			<input type="button" value = "borrar"
+			onclick = "actu( -{{ cmt[ "id" ] }} ); return false;">
+			</form>
+		{% endif %}
+	{% endfor %}
+	{% if g.usr[ "id" ] %}
+		<div id = recaptcha class = g-recaptcha
+			data-sitekey =
+				"6LcuRcAUAAAAAMEDGnG63tM2cH05wZ90BPc2YXtA"
+			data-callback = "recapejec_rll"
+			data-size = invisible >
+		</div>
+		<form id = "agnad_cmt"
+		 onsubmit = "cmt_nuevo(); return false;">
+			<input type="submit" value="añadir comentario">
+		</form>
+		<div id = "agnad_cmt_recap" ></div>
+		<!-- acar_rll abrevia: al cargar el api de recaptcha,
+			retrollamada -->
+		</script>
+		<script id = rcgoogle></script>
+		<script>
+//			danigil = "https://www.danigil.com:4321/";
+//			google	= "https://www.google.com/";
+//			static = "recap_p_estatico/"
+//			document.querySelector("#jquery").attr("src",
+//				danigil + stat + "jquery3_4_1.js" );
+//			document.querySelector("#cmtjs").attr("src",
+//				danigil + stat + "cmt.js" );
+//			document.querySelector("#cmt_lib").attr("src",
+//				dangil + stat + "cmt_lib.js" );
+//			document.querySelector("#cmt_ini").attr("src",
+//				danigil + stat + "cmt_ini.js");
+//			document.querySelector("#rcgoogle").attr("src",
+//				google + "recaptcha/api.js" );
+		</script>
+	{% endif %}
+
+{% endblock %}

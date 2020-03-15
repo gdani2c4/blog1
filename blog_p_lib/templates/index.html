@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+	{% for publ in publes %}
+
+		<h3 id = {{ publ[ "id" ] }}" >
+		<a href = "publ/{{ publ[ "id" ] }}" >
+			{{ publ[ "titulo" ] }}
+		</a></h3>, {{ nomes[ publ[ "id" ] ] }}
+
+	{% endfor %}
+
+{% endblock %}

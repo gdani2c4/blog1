@@ -1,0 +1,10 @@
+from flask import Flask
+
+def create_app():
+    ap_x = Flask( __name__ )
+    @ap_x.route( '/' )
+    def ruta_de_prueba():
+        return "ruta de prueba - desde lib"
+    # fed
+    return ap_x
+# fed

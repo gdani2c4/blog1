@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block guiones %}
+	<script src = {{ url_for( "static",
+		filename = "autr_verificar_correol.js" ) }}
+		type = "text/javascript" >
+	</script>
+	<script src = {{ url_for( "static",
+		filename = "xhr.js" ) }}></script>
+{% endblock %}
+
+{% block cabecero %}
+	<h1>{% block title %}verifique la dirrección
+		de correo electrónico{% endblock %}</h1>
+{% endblock %}
+
+{% block contenido %}
+	<p>para finalizar el registro a danigil.com, si aún
+		no ha dada al botón "enviar" más abajo, hazlo para
+		que se le mande un enlace de verificacíón a
+		{{ usr[ "correol" ] }}.</p>
+	<p>en el caso que pasados unos minutos y no se ha llegado
+		el enlace a dicha dirección, se puede dar al
+		botón nuevamente. (Si aún no le llega el código
+		de verificación, por favor <a href = "#">
+		contacte</a> con el administrador del sitio.</p>
+	<input type = "button" value = "enviar">
+	<p>para consultar el sitio sin finalizar el registro
+		por favor siga al enlace "salir" más arriba. Solo
+		la puesta y la edición de comentarios queda
+		disponible únicamente por el inicio de una sesión</p>
+	<script>enl_boton();</script>
+{% endblock %}

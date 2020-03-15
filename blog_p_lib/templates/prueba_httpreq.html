@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src = "guion"></script>
+		<script>
+			function enl_boton()
+			{
+				document.querySelector("input[type='button']").
+					onclick = al_apretar;
+			}
+			function al_apretar( event ) {
+				event.preventDefault();
+				enviar_mensaje( document.querySelector(
+					"input + input").value );
+			}
+		</script>
+	</head>
+	<body>
+		<input type = "button" value = "enviar">
+		<input placeholder = "mensaje al servidor">
+		<script>enl_boton();</script>
+	</body>
+</html>

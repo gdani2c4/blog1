@@ -1,0 +1,29 @@
+<!doctype html>
+<title>{% block titulo %}{% endblock %} - ap de prueba 3</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+<head> {% block guiones %}{% endblock %} </head>
+<nav>
+  <h1>ap de prueba 3</h1>
+  <ul>
+	<li><a href="/">lista de publicaciones</a>
+    {% if g.usr %}
+      <li><span>{{ g.usr[ "nom_usr" ] }}</span>
+      <li><a href="{{ url_for('autr.salir') }}">salir</a>
+    {% else %}
+      <li><a href="{{ url_for('autr.reg') }}">registrar</a>
+      <li><a href="{{ url_for('autr.ini_ses') }}">iniciar sesión</a>
+    {% endif %}
+  </ul>
+</nav>
+<section class="content">
+  <div class = "flash">
+    {% for mnsj in get_flashed_messages() %}
+      <p>{{ mnsj }}</p>
+    {% endfor %}
+    <div id = "blq_mnsj"></div>
+  </div>
+  <header>
+    {% block cabecero %}{% endblock %}
+  </header>
+  {% block contenido %}{% endblock %}
+</section>

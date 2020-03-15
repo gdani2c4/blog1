@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block guion_publ %}
+	<script
+	 src="{{ url_for('static', filename='jquery-latest.min.js') }}"
+	>
+	</script>
+	<script>
+		function activar( id ) {
+			if( $("#activo").length != 0 ) return 0;
+			$(`#cmt${id}`).prepend("<div id='activo'></div>");
+			return 1;
+		}
+		function modo_ed( id ) {
+			if( ! activar(id) ) {
+				alert( "ya hay un comentario en edición" );
+				return 0;
+			}
+			$(`#cmt${id}`).children("p").replaceWith(
+				"<textarea name='ctndo_post' cols=20 rows=10>" + 
+				$(`#cmt${id}`).children("p").text() + 
+				"</textarea>"
+			);
+			$(`#cmt${id}`).children("[type='submit']").attr(
+				"value", "publicar cambios" );
+			$(`#cmt${id}`).attr( "onsubmit",
+				`grecaptcha.execute();
+				actu( ${id} ); return false;` );
+			$(`#cmt${id}`).children(`#dejar_cambios`).html(
+			`<input type = "button" value = "dejar cambios"
+			 onclick="volver( ${id} ); return false;">`);
+		}
+		function volver( id ) {
+
+			/* cambiar la caja de edición de texto al
+			contenido original del texto */
+			$.getJSON( "/publ/cmt", {cmt_id: id},
+			function( cmt_rstdo ) {
+//				if( cmt_rstdo[ "cmt_null" ] ) {
+//					alert( "el comentario no se encontró" );
+//					location.reload();
+//				}
+				$(`#cmt${id}`).children("textarea").replaceWith(
+				"<p>" + cmt_rstdo[ "ctndo" ] + "</p>" );
+			} );
+
+			/* convertir el botón "enviar" en "escribe una
+				revisión" y borrar el elemento "dejar cambios"
+			 */
+			$(`#cmt${id}`).attr( "onsubmit",
+				`modo_ed( ${id} ); return false;` );
+			$(`#cmt${id}`).children("[type='submit']").attr(
+				"value", "revisar" );
+			$(`#cmt${id}`).children(`#dejar_cambios`).empty();
+			$("#activo").remove();
+		}
+		function actu( id ) {
+		error_guardar = "¡error! no llevó al cabo la " +
+			"solicitud. por favor copia y guarda el " +
+			"comentario y pruebalo más tarde. "
+			"si el error vuelve, por favor ponte en " +
+			"contacto con el administrador del sitio";
+			dat_post = {};
+			/*
+			 id == 0		añadir cmt nuevo
+			 id >  0		actualizar
+			 id <  0		borrar
+			 */
+			if( ! id ) {
+				if( $("#activo").length != 0 ) return 0;
+				dat_post.id_publ = $("#publ").attr("name");
+			}
+			else if( id < 0 ) $(`#cmt${-id}`).remove()
+			else {
+			/* el caso de actualizar:
+				no he podido sacar el valor del elemento "textarea"
+				revisado sino por el método "serializeArray()", y
+				es por eso la enredosa manera de sacar el texto
+				del bucle siguente:
+			 */
+			for( ii of $( `#cmt${id}` ).serializeArray() )
+				if( ii["name"] == "ctndo_post" ) {
+					ctndo = ii[ "value" ];
+					break;
+				}
+			if( ctndo == undefined )
+				alert( error_guardar );
+
+			dat_post[ "ctndo" ] = ctndo;
+			}
+
+			dat_post[ "id" ] = id;
+			$.ajax( "/publ/cmt/post", {
+				type: "POST",
+				data: JSON.stringify( dat_post ),
+				success: function( datos ) {
+					if( idn = datos["id"] )
+						$("#agnad_cmt").before( cmt_nuevo( idn ) );
+				},
+				error: function() { alert( error_guardar ); },
+//				error: function( rpsta, stdo, err ) {
+//					$("#blq_mnsj").html(
+//					stdo + rpsta.responseText + err );
+//					volver( id );
+//				},
+				contentType: "application/json"
+			} );
+			volver( id );
+		}
+//		function agnad_cmt()
+//		{
+//			id = actu( 0 );
+//		}
+		function cmt_nuevo( id ) {
+			$("#agnad_cmt").before(
+			`<form id = "cmt${id}"
+				onsubmit = \`
+				grecaptcha.execute();
+				actu( ${id} ); return false;\` >
+			<textarea name="ctndo_post" cols=20 rows=10></textarea>
+			<span id="dejar_cambios"></span>
+			<input type="submit" value="publicar">
+			<input type="button" value="borrar"
+			onclick = "actu( -${id} ); return false;">
+			</form>` );
+			activar( id );
+		}
+	</script>
+{% endblock %}
+
+{% block contenido %}
+
+	<div id = "publ" name="{{ id_publ }}">{{ publ }}</div>
+
+	{% for cmt in cmtos %}
+		{% if g.usr[ "id" ] != cmt[ "id_usr" ] %}
+			<p>{{ cmt[ "ctndo" ] }}</p>
+		{% else %}
+			<form id = "cmt{{ cmt[ "id" ] }}"
+			 onsubmit="modo_ed( {{cmt[ "id" ]}} ); return false;" >
+			<p>
+				{{ cmt[ "ctndo" ] }} </p>
+			<input type="submit" value="revisar">
+			<span id="dejar_cambios"></span>
+			<input type="button" value = "borrar"
+			onclick = "actu( -{{ cmt[ "id" ] }} ); return false;">
+			</form>
+		{% endif %}
+	{% endfor %}
+	{% if g.usr[ "id" ] %}
+		<form id = "agnad_cmt"
+		 onsubmit = "actu(0); return false;">
+			<input type="submit" value="añadir comentario">
+		</form>
+	{% endif %}
+
+{% endblock %}

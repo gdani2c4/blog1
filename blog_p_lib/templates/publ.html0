@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block guion_publ %}
+	<script
+	 src="{{ url_for('static', filename='jquery-latest.min.js') }}"
+	>
+	</script>
+	<script>
+		function modo_ed( id ) {
+			$(`#cmt${id}`).children("p").replaceWith(
+				"<textarea name='ctndo_post' cols=20 rows=10>" + 
+				$(`#cmt${id}`).children("p").text() + 
+				"</textarea>"
+			);
+			$(`#cmt${id}`).children("[type='submit']").attr(
+				"value", "publicar cambios" );
+			$(`#cmt${id}`).attr( "onsubmit",
+				`actu( ${id} ); return false;` );
+			$(`#cmt${id}`).children(`#dejar_cambios`).html(
+			`<input type = "button" value = "dejar cambios"
+			 onclick="volver( ${id} ); return false;">`);
+		}
+		function volver( id ) {
+
+			/* cambiar la caja de edición de texto al
+			contenido original del texto */
+			$.getJSON( "/publ/cmt", {cmt_id: id},
+			function( cmt_rstdo ) {
+				if( cmt_rstdo[ "cmt_null" ] ) {
+					alert( "el comentario no se encontró" );
+					location.reload();
+				}
+				$(`#cmt${id}`).children("textarea").replaceWith(
+				"<p>" + cmt_rstdo[ "ctndo" ] + "</p>" );
+			} );
+
+			/* convertir el botón "enviar" en "escribe una
+				revisión" y borrar el elemento "dejar cambios"
+			 */
+			$(`#cmt${id}`).attr( "onsubmit",
+				`modo_ed( ${id} ); return false;` );
+			$(`#cmt${id}`).children("[type='submit']").attr(
+				"value", "revisar" );
+			$(`#cmt${id}`).children(`#dejar_cambios`).empty();
+		}
+		function actu( id ) {
+			dat_post = [];
+			if( ! id )
+				dat_post[dat_post.length]= {
+				"id_publ" : $("#publ").attr("name") };
+			else if( id < 0 ) $(`#cmt${-id}`).remove()
+			else
+			dat_post = dat_post.concat($(`#cmt${id}`).serializeArray());
+			dat_post[ dat_post.length ] = { "id": id };
+			$.ajax( "/publ/cmt/post", {
+				type: "POST",
+				data: JSON.stringify( dat_post ),
+				success: function( datos ) {
+					if( idn = datos["id"] )
+						$("#agnad_cmt").before( cmt_nuevo( idn ) );
+				},
+				error: function( rpsta, stdo, err ) {
+					$("#blq_mnsj").html(
+					stdo + rpsta.responseText + err );
+					volver( id );
+				},
+				contentType: "application/json"
+			} );
+			volver( id );
+		}
+		function agnad_cmt()
+		{
+			id = actu( 0 );
+		}
+		function cmt_nuevo( id ) {
+			$("#agnad_cmt").before(
+			`<form id = "cmt${id}"
+				onsubmit = "actu( ${id} ); return false;" >
+			<textarea name="ctndo_post" cols=20 rows=10></textarea>
+			<span id="dejar_cambios"></span>
+			<input type="submit" value="publicar">
+			<input type="button" value="borrar"
+			onclick = "actu( -${id} ); return false;">
+			</form>` );
+		}
+	</script>
+{% endblock %}
+
+{% block contenido %}
+
+	<div id = "publ" name="{{ id_publ }}">{{ publ }}</div>
+
+	{% for cmt in cmtos %}
+		{% if g.usr[ "id" ] != cmt[ "id_usr" ] %}
+			<p>{{ cmt[ "ctndo" ] }}</p>
+		{% else %}
+			<form id = "cmt{{ cmt[ "id" ] }}"
+			 onsubmit="modo_ed( {{cmt[ "id" ]}} ); return false;" >
+			<p>
+				{{ cmt[ "ctndo" ] }} </p>
+			<input type="submit" value="revisar">
+			<span id="dejar_cambios"></span>
+			<input type="button" value = "borrar"
+			onclick = "actu( -{{ cmt[ "id" ] }} ); return false;">
+			</form>
+		{% endif %}
+	{% endfor %}
+	{% if g.usr[ "id" ] %}
+		<form id = "agnad_cmt"
+		 onsubmit = "agnad_cmt(); return false;">
+			<input type="submit" value="añadir comentario">
+		</form>
+	{% endif %}
+
+{% endblock %}
