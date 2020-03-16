@@ -19,7 +19,9 @@
 
 {% block contenido %}
 
+	{{% autoescape false %}}
 	<div id = "publ" name="{{ id_publ }}">{{ publ }}</div>
+	{{ endautoescape }}
 
 	{% for cmt in cmtos %}
 		{% if g.usr[ "id" ] != cmt[ "id_usr" ] %}
