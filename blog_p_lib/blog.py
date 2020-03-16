@@ -1,5 +1,5 @@
-#import os, requests, json
-import os, json
+import os, requests, json
+#import os, json
 
 from flask import (
 Blueprint, g, render_template, request,
@@ -69,7 +69,8 @@ def modificar():
         if google_rsp( dat_post[ "ficha" ] ):
             bbdd1.execute(
                 "UPDATE cmt SET ctndo = ? WHERE id = ?", (
-                desinfectar( dat_post["ctndo"] ),
+#                desinfectar( dat_post["ctndo"] ),
+                dat_post["ctndo"],
                 dat_post[ "id" ] )
             )
         else: abort( 400, "no se pudo cumplir la solicitud" )

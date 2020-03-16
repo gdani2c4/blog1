@@ -11,7 +11,8 @@ function al_env( event )
 }
 function recapejec_rll( token )
 {
-	console.log( "*".repeat(20) + "ficha: " + token );
+//	console.log( Number( document.querySelector("#activo").
+//    	parentElement.id.slice(3) )  );
 	actu( Number( document.querySelector("#activo").
 		parentElement.id.slice(3)  ), ficha = token );
 }

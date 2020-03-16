@@ -1,5 +1,5 @@
 from flask import current_app
-import smtplib, ssl
+import smtplib, ssl, re
 contexto = ssl.create_default_context()
 def env_corr( mnsj, dir_corr ):
     cnta = current_app.config["SMTP"]
@@ -18,6 +18,6 @@ def desinfectar( cda_html ):
             entidades[ ii ], cda_html )
         ii += 1
     # done
-    breakpoint()
+#    breakpoint()
     return cda_html
 # fed

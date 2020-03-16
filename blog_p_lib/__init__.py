@@ -5,7 +5,7 @@ from flask import Flask, render_template
 def create_app( pruebas_cfg = None ):
     ap_x = Flask( __name__, instance_relative_config = True )
     ap_x.config.from_mapping(
-    SECRET_KEY = "des",
+#    SECRET_KEY = "des",
 #    PRUEBA1 = "prueba 123 config var",
     DATABASE = os.path.join( ap_x.instance_path,
     "flask.sqlite" )

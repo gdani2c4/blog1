@@ -20,7 +20,6 @@ function modo_ed( id ) {
 	 onclick="volver( ${id} ); return false;">`);
 }
 function volver( id ) {
-
 	/* cambiar la caja de edición de texto al
 	contenido original del texto */
 	$.getJSON( "/publ/cmt", {cmt_id: id},
@@ -29,8 +28,13 @@ function volver( id ) {
 //			alert( "el comentario no se encontró" );
 //			location.reload();
 //		}
-		$(`#cmt${id}`).children("textarea").replaceWith(
-		"<p>" + cmt_rstdo[ "ctndo" ] + "</p>" );
+		let elm_nvo = document.createElement("p");
+		elm_nvo.innerText = cmt_rstdo[ "ctndo" ];
+		elm_ant = document.querySelector(`#cmt${id} textarea`);
+		document.querySelector(`#cmt${id}`).replaceChild(
+			elm_nvo, elm_ant );
+//		$(`#cmt${id}`).children("textarea").replaceWith(
+//		"<p>" + cmt_rstdo[ "ctndo" ] + "</p>" );
 	} );
 
 	/* convertir el botón "enviar" en "escribe una
@@ -95,11 +99,9 @@ error_guardar = "¡error! no llevó al cabo la " +
 		}.bind( id ),
 		error: function() {
 			mnsj_flash = document.createElement("p");
-			mnsj_flash.textContent = error_guardar;
+			mnsj_flash.innerText = error_guardar;
 			document.querySelector("#blq_mnsj").
 				appendChild( mnsj_flash );
-//			document.querySelector("#blq_mnsj").
-//				innerHTML = error_guardar;
 			},
 		contentType: "application/json"
 	} );
